@@ -1,11 +1,12 @@
 <?php 
 class Rest {
     public function __construct(){
-
+$handler=fopen('php://input','r');
+echo $request= stream_get_contents($handler);
     }
     public function validateRequest(){
 
-    }
+    } 
     public function processApi(){
 
     }
