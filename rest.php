@@ -72,7 +72,8 @@ $this->param=$data['param'];
                    }
                       break;
             default:
-                # code...
+            $this->throwError(VALIDATE_PARAMETER_DATATYPE,"
+            Datatype is not valid for " .$fieldName);
                 break;
 
         }
@@ -83,8 +84,10 @@ $this->param=$data['param'];
 $errorMsg =json_encode(['Http'=>$code,'status'=>'false','message'=>$message]);
 echo $errorMsg;exit;
     }
-    public function  returnResponse(){
-
+    public function  returnResponse($code,$message){
+header("content-type:application/json");
+$response=json_encode(['response'=>['Http'=>$code,'status'=>'false','message'=>$message]]);
+echo $response; exit;
     }
 }
 ?>
