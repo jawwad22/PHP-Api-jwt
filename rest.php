@@ -21,7 +21,16 @@ class Rest {
         $this->throwError(REQUEST_CONTENTTYPE_NOT_VALID,'Request Content type is not valid');
     }
     $data=json_decode($this->request,true);
-    print_r($data);
+    // print_r($data);
+
+    if(!isset($data['name'])|| $data['name']==""){
+        $this->throwError(API_NAME_REQUIRED,"API name required");
+    }
+    $this->serviceName=$data['name'];
+    if(!is_array($data['param'])){
+        $this->throwError(API_PARAM_REQUIRED,"API Param required");
+    }
+$this->param=$data['param'];
     } 
     public function processApi(){
 
