@@ -1,19 +1,17 @@
-<?php
-class Customer{
-    private $id;
-    private $name;
-    private $email;
-    private $address;
-    private $mobile;
-    private $updatedBy;
-    private $updatedOn;
-    private $createdBy;
-    private $createdOn;
-    private $tableName='customers';
-    private $dbConn;
-
-    //Functions
-    function setId($id) { $this->id = $id; }
+<?php 
+	class Customer {
+		private $id;
+		private $name;
+		private $email;
+		private $address;
+		private $mobile;
+		private $updatedBy;
+		private $updatedOn;
+		private $createdBy;
+		private $createdOn;
+		private $tableName = 'customers';
+		private $dbConn;
+		function setId($id) { $this->id = $id; }
 		function getId() { return $this->id; }
 		function setName($name) { $this->name = $name; }
 		function getName() { return $this->name; }
@@ -31,19 +29,17 @@ class Customer{
 		function getCreatedBy() { return $this->createdBy; }
 		function setCreatedOn($createdOn) { $this->createdOn = $createdOn; }
 		function getCreatedOn() { return $this->createdOn; }
-
-        public function __construct(){
-            $db=new DbConnect();
-            $this->dbConn=$db->connect();
-        }
-
-        public function getAllCustomers(){
-            $stmt=$this->dbConn->prepare("SELECT * FROM ".$this->tableName);
-            $stmt->execute();
-            $customers=$stmt->fetchAll(PDO::FETCH_ASSOC);
-            return $customers;
-        }
-        public function getCustomerDetailsById() {
+		public function __construct() {
+			$db = new DbConnect();
+			$this->dbConn = $db->connect();
+		}
+		public function getAllCustomers() {
+			$stmt = $this->dbConn->prepare("SELECT * FROM " . $this->tableName);
+			$stmt->execute();
+			$customers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			return $customers;
+		}
+		public function getCustomerDetailsById() {
 			$sql = "SELECT 
 						c.*, 
 						u.name as created_user,
@@ -58,8 +54,9 @@ class Customer{
 			$stmt->execute();
 			$customer = $stmt->fetch(PDO::FETCH_ASSOC);
 			return $customer;
-        }
-        public function insert() {
+		}
+		
+		public function insert() {
 			
 			$sql = 'INSERT INTO ' . $this->tableName . '(id, name, email, address, mobile, created_by, created_on) VALUES(null, :name, :email, :address, :mobile, :createdBy, :createdOn)';
 			$stmt = $this->dbConn->prepare($sql);
@@ -76,7 +73,7 @@ class Customer{
 				return false;
 			}
 		}
-        public function update() {
+		public function update() {
 			
 			$sql = "UPDATE $this->tableName SET";
 			if( null != $this->getName()) {
@@ -101,8 +98,8 @@ class Customer{
 			} else {
 				return false;
 			}
-        }
-        public function delete() {
+		}
+		public function delete() {
 			$stmt = $this->dbConn->prepare('DELETE FROM ' . $this->tableName . ' WHERE id = :userId');
 			$stmt->bindParam(':userId', $this->id);
 			
@@ -111,6 +108,6 @@ class Customer{
 			} else {
 				return false;
 			}
-        }
-        
-?>
+		}
+	}
+ ?>
