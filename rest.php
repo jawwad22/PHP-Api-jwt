@@ -33,11 +33,50 @@ class Rest {
 $this->param=$data['param'];
     } 
     public function processApi(){
+        $api =new API;
+        $rMethod=new reflectionMethod('API',$this->serviceName);
+        if(!method_exists($api,$this->serviceName)){
+            $this->throwError(API_DOES_NOT_EXIST,"API does not exist.");
+        }
+        $rMethod->invoke($api);
 
     }
-    public function validateParameter($fieldName,$value,$dataType,$required)
+    public function validateParameter($fieldName,$value,$dataType,$required=true)
     {
-        
+        if($required==true && empty($value)==true){
+            $this->throwError(VALIDATE_PARAMETER_REQUIRED,
+       $fieldName . " Parameter is required"
+        );
+        }
+        switch ($dataType) {
+            case BOOLEAN:
+             if(!is_bool($value)){
+            $this->throwError(VALIDATE_PARAMETER_DATATYPE,"
+            Datatype is not valid for " .$fieldName. " It should
+            be Boolean"
+             );
+             }
+                break;
+                case INTEGER:
+                if(!is_numeric($value)){
+               $this->throwError(VALIDATE_PARAMETER_DATATYPE,"
+               Datatype is not valid for " .$fieldName . " It should be numeric"
+                );
+                }
+                   break;
+                   case STRING:
+                   if(!is_string($value)){
+                  $this->throwError(VALIDATE_PARAMETER_DATATYPE,"
+                  Datatype is not valid for " .$fieldName . " It should be string"
+                   );
+                   }
+                      break;
+            default:
+                # code...
+                break;
+
+        }
+        return $value;
     }
     public function throwError($code,$message){
         header("content-type:application/json");
