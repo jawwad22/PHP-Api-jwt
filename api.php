@@ -39,29 +39,6 @@ public function generateToken(){
             $this->throwError(JWT_PROCESSING_ERROR,$e->getMessage());
         }
 }
-public function validateToken(){
-    try{
-        $token=$this->getBearerToken();
-        $payload=JWT::decode($token,SECRET_KEY,['HS256'] );
-        $stmt =$this->dbConn->prepare("SELECT * FROM users WHERE id=
-        :userId");
-
-        $stmt->bindParam(":userId",$payload->userId);
-        $stmt->execute();
-        $user=$stmt->fetch(PDO::FETCH_ASSOC);
-        if(!is_array($user)){
-           
-            $this->returnResponse(INVALID_USER_PASS,"user not found");
-        }
-        if($user['active']==0){
-            $this->returnResponse(USER_NOT_ACTIVE,"user is not activated,please contact to admin");
-        }
-    }catch(Exception $e){
-        $this->throwError(ACCESS_TOKEN_ERRORS,$e->getMessage());
-
-    }
-}
-
 
 public function addCustomer(){
     $name=$this->validateParameter('name',$this->param['name'],STRING,false);
@@ -85,7 +62,29 @@ $booStatus=false;
             $message="Inserted successfully";
         }
         $this->returnResponse(SUCCESS_RESPONSE,$message);
-   
+
+    }
+
+    public function getCustomerDetails(){
+    $customerId=$this->validateParameter('customerId',$this->
+    param['customerId'],INTEGER);
+
+    $cust=new Customer;
+    $cust->setId($customerId);
+
+   $customer= $cust->getCustomerDetailsById();
+if(!is_array($customer)){
+    $this->returnResponse(SUCCESS_RESPONSE,['message'=>
+    'Customer details are not in database']);
+}
+            $response['customerId'] 	= $customer['id'];
+			$response['cutomerName'] 	= $customer['name'];
+			$response['email'] 			= $customer['email'];
+			$response['mobile'] 		= $customer['mobile'];
+			$response['address'] 		= $customer['address'];
+			$response['createdBy'] 		= $customer['created_user'];
+			$response['lastUpdatedBy'] 	= $customer['updated_user'];
+			$this->returnResponse(SUCCESS_RESPONSE, $response);
 
 }
 }

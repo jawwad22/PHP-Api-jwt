@@ -46,7 +46,7 @@
 						u1.name as updated_user
 					FROM customers c 
 						JOIN users u ON (c.created_by = u.id) 
-						LEFT JOIN users u1 ON (c.updated_by = u1.id) 
+						LEFT JOIN users u1 ON (c.update_by = u1.id) 
 					WHERE 
 						c.id = :customerId";
 			$stmt = $this->dbConn->prepare($sql);
