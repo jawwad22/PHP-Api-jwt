@@ -84,9 +84,9 @@ $this->param=$data['param'];
 $errorMsg =json_encode(['Http'=>$code,'status'=>'false','message'=>$message]);
 echo $errorMsg;exit;
     }
-    public function  returnResponse($code,$message){
+    public function  returnResponse($code,$message,$status=true){
 header("content-type:application/json");
-$response=json_encode(['response'=>['Http'=>$code,'status'=>'false','message'=>$message]]);
+$response=json_encode(['response'=>['Http'=>$code,'status'=>$status,'message'=>$message]]);
 echo $response; exit;
     }
 }

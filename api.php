@@ -24,9 +24,18 @@ $this->dbConn=$db->connect();
               $this->returnResponse(INVALID_USER_PASS,"Email or Password is incorrect");
           }
           if($user['active']==0){
-              $this->returnResponse(USER_NOT_ACTIVE,"user is not activated,please contact to admin")
+              $this->returnResponse(USER_NOT_ACTIVE,"user is not activated,please contact to admin");
           }
+          $payload=[
+              'iat'=>time(),
+              'iss'=>'localhost',
+              'exp'=>time()+(60),
+              'userId'=>$user['id']
+          ];
+         
+          $token=jwt::encode($payload,SECRET_KEY);
+         $this->returnResponse(SUCCESS_RESPONSE,$token);
           
-    }
+}
 }
 ?>
