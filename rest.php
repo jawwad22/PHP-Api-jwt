@@ -4,6 +4,8 @@ class Rest {
     protected $request;
     protected $serviceName;
     protected $param;
+    protected $dbConn;
+    protected $userId;
 
     public function __construct(){
         if($_SERVER['REQUEST_METHOD']!=='POST'){
@@ -14,6 +16,13 @@ class Rest {
     $handler=fopen('php://input','r');
     $this->request= stream_get_contents($handler);
     $this->validateRequest();
+
+    $db=new DbConnect;
+    $this->dbConn=$db->connect();
+
+    if('generateToken'!= strtolower($this->serviceName)){
+        $this->validateToken();
+    }
     }
 
     public function validateRequest(){
@@ -79,6 +88,7 @@ $this->param=$data['param'];
         }
         return $value;
     }
+
     public function throwError($code,$message){
         header("content-type:application/json");
 $errorMsg =json_encode(['Http'=>$code,'status'=>'false','message'=>$message]);
@@ -121,6 +131,29 @@ echo $response; exit;
 	            }
 	        }
 	        $this->throwError( ATHORIZATION_HEADER_NOT_FOUND, 'Access Token Not found');
-	    }
+        }
+        public function validateToken(){
+            try{
+                $token=$this->getBearerToken();
+                $payload=JWT::decode($token,SECRET_KEY,['HS256'] );
+                $stmt =$this->dbConn->prepare("SELECT * FROM users WHERE id=
+                :userId");
+        
+                $stmt->bindParam(":userId",$payload->userId);
+                $stmt->execute();
+                $user=$stmt->fetch(PDO::FETCH_ASSOC);
+                if(!is_array($user)){
+                   
+                    $this->returnResponse(INVALID_USER_PASS,"user not found");
+                }
+                if($user['active']==0){
+                    $this->returnResponse(USER_NOT_ACTIVE,"user is not activated,please contact to admin");
+                }
+            }catch(Exception $e){
+                $this->throwError(ACCESS_TOKEN_ERRORS,$e->getMessage());
+        
+            }
+        }
+        
 }
 ?>

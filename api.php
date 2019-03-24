@@ -4,8 +4,7 @@ class Api extends Rest{
 
     public function __construct(){
 parent::__construct();
-$db=new DbConnect;
-$this->dbConn=$db->connect();
+
     }
 public function generateToken(){
           $email=$this->validateParameter('email',$this->param['email'],STRING);
@@ -40,12 +39,7 @@ public function generateToken(){
             $this->throwError(JWT_PROCESSING_ERROR,$e->getMessage());
         }
 }
-public function addCustomer(){
-    $name=$this->validateParameter('name',$this->param['name'],STRING,false);
-    $email=$this->validateParameter('email',$this->param['email'],STRING,false);
-    $addr=$this->validateParameter('addr',$this->param['addr'],STRING,false);
-    $mobile=$this->validateParameter('mobile',$this->param['mobile'],STRING,false);
-
+public function validateToken(){
     try{
         $token=$this->getBearerToken();
         $payload=JWT::decode($token,SECRET_KEY,['HS256'] );
@@ -62,6 +56,19 @@ public function addCustomer(){
         if($user['active']==0){
             $this->returnResponse(USER_NOT_ACTIVE,"user is not activated,please contact to admin");
         }
+    }catch(Exception $e){
+        $this->throwError(ACCESS_TOKEN_ERRORS,$e->getMessage());
+
+    }
+}
+
+
+public function addCustomer(){
+    $name=$this->validateParameter('name',$this->param['name'],STRING,false);
+    $email=$this->validateParameter('email',$this->param['email'],STRING,false);
+    $addr=$this->validateParameter('addr',$this->param['addr'],STRING,false);
+    $mobile=$this->validateParameter('mobile',$this->param['mobile'],STRING,false);
+
         $cust=new Customer;
         $cust->setName($name);
         $cust->setEmail($email);
@@ -78,11 +85,7 @@ $booStatus=false;
             $message="Inserted successfully";
         }
         $this->returnResponse(SUCCESS_RESPONSE,$message);
-    }  
-    catch(Exception $e){
-        $this->throwError(ACCESS_TOKEN_ERRORS,$e->getMessage());
-
-    }
+   
 
 }
 }
